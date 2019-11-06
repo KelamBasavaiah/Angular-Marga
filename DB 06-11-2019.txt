@@ -1,0 +1,139 @@
+
+create database dbMarga
+use dbMarga
+
+-----------------table1 User table--------------------
+create table tblUser(Employee_Id varchar(10) constraint pk_employeeid primary key,
+Password varchar(20),
+Role varchar(20))
+
+select * from tblUser
+sp_help tblUser
+------------inset values in table 1 login---------------------------------------
+insert into tblUser values('E001','1234','Manager')
+insert into tblUser values('E002','2341','Developer')
+insert into tblUser values('E003','3412','Tester')
+insert into tblUser values('E004','4321','Manager')
+insert into tblUser values('E005','1324','Developer')
+insert into tblUser values('E006','1432','Tester')
+insert into tblUser values('E007','1334','Developer')
+insert into tblUser values('E008','1439','Tester')
+insert into tblUser values('E009','1479','Manager')
+
+select * from tblUser
+
+
+-------------------------------table 2 Project table------------------------------
+create table tblProject(Project_Id varchar(10) constraint pk_project primary key,
+Project_Name varchar(20),Description varchar(50))
+
+
+sp_help tblProject
+select * from tblProject
+-------------insert table value2--------
+insert into tblProject values('P001','Blood Bank App','Requirement of blood group to patients')
+insert into tblProject values('P002','Stock Management','info about stocks')
+insert into tblProject values('P003','E-Commerce','online Shopping site')
+insert into tblProject values('P004','BPO App','Customer')
+---------------------------table 3--- project Manager--------
+create table tblProjectManager(project_id varchar(10) constraint fk_projectid references tblProject(Project_Id),
+manager_id varchar(10) constraint fk_manager_id references tblUser(Employee_Id)
+constraint pk_ProjectManager primary key (project_id,manager_id))
+
+sp_help tblProjectManager
+select * from tblProjectManager
+insert into tblProjectManager values('P001','E001')
+insert into tblProjectManager values('P002','E004')
+insert into tblProjectManager values('P003','E004')
+insert into tblProjectManager values('P004','E009')
+
+----------------------------------------table 3----Module table-------------------------
+create table tblModules (Module_Id varchar(5) constraint pk_Module_Id primary key,
+Project_Id varchar(10) constraint fk_ProId references tblProject(Project_Id),
+Module_Name varchar(20),
+Description varchar(40),
+Developer_Id varchar(10) constraint fk_devid references tblUser(Employee_Id),
+Tester_Id varchar(10) constraint fk_testersid references tblUser(Employee_Id),
+Status_Id varchar(5) constraint fk_StatusId references tblModuleStatus (Module_id))
+
+sp_help tblModule
+select * from tblModules
+
+
+-----inserting--------
+insert into tblModules values('MO01','P001','Registration Valid','validating all modules','E002','E003','M001')
+insert into tblModules values('MO02','P002','Login Page','User page ','E005','E006','M002')
+insert into tblModules values('MO03','P003','Home Page','dashboard for user','E007','E006','M003')
+insert into tblModules values('MO04','P004','Master Page','Common layout ','E005','E008','M004')
+
+--
+delete from tblModules where Module_Id='M004'
+
+---------------------------------table 4 ----Bug Table--------------------------------
+create table tblBug(Bug_Id varchar(5) constraint pk_bugid primary key,
+Module_Id varchar(5) constraint fk_moduleid references tblModules(Module_Id),
+Bug_Details varchar(50),Status_id varchar(5) constraint fk_Status_id references tblBugStatus(BugId))
+
+
+insert into tblBug values('BU01','MO01',' ','B001')
+insert into tblBug values('BU02','MO02',' ','B002')
+insert into tblBug values('BU03','MO03',' ','B003')
+insert into tblBug values('BU04','MO04',' ','B004')
+
+delete from tblBug where Module_Id='BU01'
+drop table tblBug
+
+sp_help tblBug
+select *from tblBug
+-----------------table bug status-------
+create table tblBugStatus(BugId varchar(5) constraint pk_Bid primary key,status varchar(10))
+
+insert into  tblBugStatus values('B001','NC')
+insert into  tblBugStatus values('B002','NC')
+insert into  tblBugStatus values('B003','NC')
+insert into  tblBugStatus values('B004','NC')
+
+----------module status----
+create table tblModuleStatus(Module_id varchar(5) constraint pk_Mid primary key,status varchar(10))
+
+insert into tblModuleStatus values('M001','NC')
+insert into tblModuleStatus values('M002','NC')
+insert into tblModuleStatus values('M003','NC')
+insert into tblModuleStatus values('M004','NC')
+
+select *from tblModuleStatus
+
+--------------------store procedure------------
+
+
+Create Proc proc_InsertBugs(@bugdetail varchar(50))
+as
+begin
+select * from tblBug where Bug_Details = @bugdetail
+end
+
+
+create proc proc_AssignProjecttoDeveloper(@moduleid varchar(5),@Did varchar(5))
+as
+begin
+update tblModule set Developer_Id = @did where Module_Id = @moduleid
+end
+
+create proc proc_AssignProjectToTester(@moduleid varchar(5),@Tid varchar(5))
+as
+begin
+update tblModule set Tester_Id = @Tid where Module_Id = @moduleid
+end
+
+-------------------------------------------------------
+---------------------------------------------------------
+select *from tblUser
+select *from tblProjectManager
+select *from tblProject
+select *from tblModuleStatus
+select *from tblModules
+select *from tblBugStatus
+select *from tblBug
+
+------------------------------------------------------------
+------------------------------------------------------
