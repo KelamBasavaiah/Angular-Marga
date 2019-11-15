@@ -1,0 +1,586 @@
+----------Usermodel-----------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace UserLogin
+{
+    public class Login
+    {
+        string employeeId, password;
+        string role;
+
+        public string EmployeeId { get => employeeId; set => employeeId = value; }
+        public string Password { get => password; set => password = value; }
+        public string Role { get => role; set => role = value; }
+        
+    }
+}
+-----------------------Dal--------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data;
+using System.Data.SqlClient;
+using System.Configuration;
+using UserLogin;
+
+namespace EmployeeLoginProject
+{
+    public class LoginDal
+    {
+        SqlConnection conn;
+        SqlCommand cmdcheck;
+
+    
+     public LoginDal()
+        {
+        conn = new SqlConnection(ConfigurationManager.ConnectionStrings["conlogin"].ConnectionString);
+         }
+        
+
+
+        public string Checkusers(string EmployeeId, string password)
+        {
+            
+            
+            cmdcheck = new SqlCommand("proc_userlogin", conn);            
+            cmdcheck.Parameters.Add("@EmpID", SqlDbType.VarChar,10);
+            cmdcheck.Parameters.Add("@password",SqlDbType.VarChar,20);
+            cmdcheck.Parameters.Add("@role", SqlDbType.VarChar, 20);
+            cmdcheck.CommandType = CommandType.StoredProcedure;
+            string Role = null;
+            conn.Open();
+            
+            cmdcheck.Parameters[0].Value = EmployeeId;
+            cmdcheck.Parameters[1].Value = password;
+            cmdcheck.Parameters[2].Direction = ParameterDirection.Output;
+            cmdcheck.ExecuteNonQuery();
+           
+            
+            Role = cmdcheck.Parameters[2].Value.ToString();
+            conn.Close();
+            return Role;
+
+            
+          
+        }
+    }
+}
+----------------------bal--------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using EmployeeLoginProject;
+using UserLogin;
+
+namespace EmployeeLogin
+{
+    public class LoginBL
+    {
+        LoginDal dal;
+        public LoginBL()
+        {
+            dal = new LoginDal();
+        }
+        public string loging(string employeeid, string password)
+        {
+            return dal.Checkusers(employeeid, password);
+
+        }
+    }
+}
+----------------------------------------Fe-----------------login controller----
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using ReleaseManagementMVCApplication.Models;
+using EmployeeLogin;
+using UserLogin;
+
+namespace ReleaseManagementMVCApplication.Controllers
+{
+    public class LoginController : Controller
+    {
+        // GET: Login
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult signIn()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult Signin(LoginChild user)
+        {
+            if(ModelState.IsValid)
+            {
+                LoginBL bl = new LoginBL();
+                Login login = new Login();
+                string role = bl.loging(user.Employeeid, user.Password);
+
+                if (role == "Manager")
+                {
+                    //TempData["un"] = user.EmployeeId;
+                    ViewBag.Message = "yes done";
+                    return this.RedirectToAction("manage", "Manager");
+
+                }
+                else if (role == "Tester")
+                {
+                    return this.RedirectToAction("test", "Tester");
+                }
+                else if (role == "Developer")
+                {
+                    return this.RedirectToAction("develop", "Developer");
+                }
+                else
+                {
+                    ViewBag.Message = "Invalid Username or password";
+
+                }
+            }
+            
+            return View();
+        }
+
+        
+    }
+}
+----------------------------model for login-------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.ComponentModel.DataAnnotations;
+
+namespace ReleaseManagementMVCApplication.Models
+{
+    public class LoginUser
+    {
+       public string employeeid, password, role;
+        [Required(ErrorMessage ="Employee ID cannot be empty")]
+
+        public string Employeeid { get; set; }
+
+        [Required(ErrorMessage = "Password cannot be empty")]
+        [MaxLength(20,ErrorMessage = "password has maximum 20 char")]
+        
+        public string Password { get; set; }
+        public string Role { get; set; }
+    }
+   
+}
+--------------------------model for child----------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using UserLogin;
+
+namespace ReleaseManagementMVCApplication.Models
+{
+    public class LoginChild : LoginUser
+    {
+
+    }
+}
+----------------sign cshtml
+@model ReleaseManagementMVCApplication.Models.LoginChild
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="~/Content/fun.css" rel="stylesheet" />
+    <script type="text/javascript">
+        document.write("<end><font size=+3 style='color:white;'>");
+        var day = new Date();
+        var hr = day.getHours();
+        if (hr >= 0 && hr < 12) {
+            document.write("Good Morning");
+
+        } else if (hr == 12) {
+            document.write("Good Noon!");
+        } else if (hr >= 12 && hr <= 17) {
+            document.write("Good Afternoon");
+        } else {
+            document.write("Good Evening");
+        }
+        document.write("</font></center>");
+    </script>
+    <script>!function (e, t, a) { var c = e.head || e.getElementsByTagName("head")[0], n = e.createElement("script"); n.async = !0, n.defer = !0, n.type = "text/javascript", n.src = t + "/static/js/chat_widget.js?config=" + JSON.stringify(a), c.appendChild(n) }(document, "https://app.engati.com", { bot_key: "71ac453cdee54192", welcome_msg: true, branding_key: "default", server: "https://app.engati.com", e: "p" });</script>
+</head>
+
+<body>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+
+
+
+        <div class="wrapper fadeInDown">
+            <img src="~/Content/images/ma.jpg" class="circular--square"/ >
+
+            <div id="formContent">
+
+
+                <h2 class="active"> Sign In </h2>
+
+
+                <div class="form-horizontal">
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.Label("EmployeeID")
+
+                    @Html.EditorFor(model => model.Employeeid, new { htmlAttributes = new { @class = "form-control"} })
+                    @Html.ValidationMessageFor(model => model.Employeeid, "", new { @class = "text-danger" })
+
+                    <br />
+
+                    @Html.Label("password")
+                    @Html.PasswordFor(model => model.Password, new { htmlAttributes = new {  @class = "form-control", @id = "txtPassword" } })
+
+                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Sign In" class="btn btn-default" />
+                        </div>
+                    </div>
+                    @ViewBag.message
+
+                </div>
+            </div>
+        </div>
+    }
+
+</body>
+</html>
+@section Script{
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+
+------------------------------------css file------------
+@import url('https://fonts.googleapis.com/css?family=Poppins');
+
+/* BASIC */
+
+html {
+    /*background-color: #56baed;*/
+    background-image: url("images/bbimg.jpg");
+    background-size:cover;
+    background-repeat: no-repeat;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    height: 100vh;
+}
+#txtPassword{
+    content:"Password";
+}
+
+
+a {
+    color: #92badd;
+    display: inline-block;
+    text-decoration: none;
+    font-weight: 400;
+}
+
+h2 {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    display: inline-block;
+    margin: 40px 8px 10px 8px;
+    color: #cccccc;
+}
+
+
+
+/* STRUCTURE */
+
+.wrapper {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    min-height: 100%;
+    padding: 20px;
+}
+
+#formContent {
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border-radius: 10px 10px 10px 10px;
+    background: #fff;
+    padding: 30px;
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    padding: 0px;
+    -webkit-box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+    box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+    text-align: center;
+    opacity: 0.9;
+    filter: alpha(opacity=80);
+}
+
+#formFooter {
+    background-color: #f6f6f6;
+    border-top: 1px solid #dce8f1;
+    padding: 25px;
+    text-align: center;
+    -webkit-border-radius: 0 0 10px 10px;
+    border-radius: 0 0 10px 10px;
+}
+
+
+
+/* TABS */
+
+h2.inactive {
+    color: #cccccc;
+}
+
+h2.active {
+    color: #0d0d0d;
+    border-bottom: 2px solid #5fbae9;
+}
+
+
+
+/* FORM TYPOGRAPHY*/
+
+input[type=button], input[type=submit], input[type=reset] {
+    background-color: #56baed;
+    border: none;
+    color: white;
+    padding: 15px 80px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    text-transform: uppercase;
+    font-size: 13px;
+    -webkit-box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
+    box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+    margin: 5px 20px 40px 20px;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
+    input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover {
+        background-color: #39ace7;
+    }
+
+    input[type=button]:active, input[type=submit]:active, input[type=reset]:active {
+        -moz-transform: scale(0.95);
+        -webkit-transform: scale(0.95);
+        -o-transform: scale(0.95);
+        -ms-transform: scale(0.95);
+        transform: scale(0.95);
+    }
+
+input[type=text],input[type=password]{
+    background-color: #f6f6f6;
+    border: none;
+    color: #0d0d0d;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 5px;
+    width: 85%;
+    border: 2px solid #f6f6f6;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+}
+
+    input[type=text]:focus, input[type=password]:focus {
+        background-color: #fff;
+        border-bottom: 2px solid #5fbae9;
+    }
+
+    input[type=text]:placeholder, input[type=password]:placeholder {
+        color: #cccccc;
+    }
+
+
+
+/* ANIMATIONS */
+
+/* Simple CSS3 Fade-in-down Animation */
+.fadeInDown {
+    -webkit-animation-name: fadeInDown;
+    animation-name: fadeInDown;
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
+@-webkit-keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        -webkit-transform: translate3d(0, -100%, 0);
+        transform: translate3d(0, -100%, 0);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: none;
+        transform: none;
+    }
+}
+
+@keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        -webkit-transform: translate3d(0, -100%, 0);
+        transform: translate3d(0, -100%, 0);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: none;
+        transform: none;
+    }
+}
+
+/* Simple CSS3 Fade-in Animation */
+@-webkit-keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@-moz-keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.fadeIn {
+    opacity: 0;
+    -webkit-animation: fadeIn ease-in 1;
+    -moz-animation: fadeIn ease-in 1;
+    animation: fadeIn ease-in 1;
+    -webkit-animation-fill-mode: forwards;
+    -moz-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -webkit-animation-duration: 1s;
+    -moz-animation-duration: 1s;
+    animation-duration: 1s;
+}
+
+    .fadeIn.first {
+        -webkit-animation-delay: 0.4s;
+        -moz-animation-delay: 0.4s;
+        animation-delay: 0.4s;
+    }
+
+    .fadeIn.second {
+        -webkit-animation-delay: 0.6s;
+        -moz-animation-delay: 0.6s;
+        animation-delay: 0.6s;
+    }
+
+    .fadeIn.third {
+        -webkit-animation-delay: 0.8s;
+        -moz-animation-delay: 0.8s;
+        animation-delay: 0.8s;
+    }
+
+    .fadeIn.fourth {
+        -webkit-animation-delay: 1s;
+        -moz-animation-delay: 1s;
+        animation-delay: 1s;
+    }
+
+/* Simple CSS3 Fade-in Animation */
+.underlineHover:after {
+    display: block;
+    left: 0;
+    bottom: -10px;
+    width: 0;
+    height: 2px;
+    background-color: #56baed;
+    content: "";
+    transition: width 0.2s;
+}
+
+.underlineHover:hover {
+    color: #0d0d0d;
+}
+
+    .underlineHover:hover:after {
+        width: 100%;
+    }
+
+
+
+/* OTHERS */
+
+*:focus {
+    outline: none;
+}
+
+#icon {
+    width: 60%;
+}
+
+* {
+    box-sizing: border-box;
+}
+.circular--square {
+    border-radius: 50%;
+    width: 100px;
+}
+
