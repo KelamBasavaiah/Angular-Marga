@@ -1,0 +1,9 @@
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ReleaseManagementDALLibrary\bin\Debug\ReleaseManagementDALLibrary.dll
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ReleaseManagementDALLibrary\bin\Debug\ReleaseManagementDALLibrary.pdb
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ReleaseManagementDALLibrary\bin\Debug\ReleaseManagementProjectLibrary.dll
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ReleaseManagementDALLibrary\bin\Debug\ReleaseManagementProjectLibrary.pdb
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ReleaseManagementDALLibrary\obj\Debug\ReleaseManagementDALLibrary.csprojAssemblyReference.cache
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ReleaseManagementDALLibrary\obj\Debug\ReleaseManagementDALLibrary.csproj.CoreCompileInputs.cache
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ReleaseManagementDALLibrary\obj\Debug\ReleaseManagementDALLibrary.csproj.CopyComplete
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ReleaseManagementDALLibrary\obj\Debug\ReleaseManagementDALLibrary.dll
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ReleaseManagementDALLibrary\obj\Debug\ReleaseManagementDALLibrary.pdb

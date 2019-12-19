@@ -1,0 +1,11 @@
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ManagerBLLibrary\bin\Debug\ManagerBLLibrary.dll
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ManagerBLLibrary\bin\Debug\ManagerBLLibrary.pdb
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ManagerBLLibrary\bin\Debug\ReleaseManagementDALLibrary.dll
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ManagerBLLibrary\bin\Debug\ReleaseManagementProjectLibrary.dll
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ManagerBLLibrary\bin\Debug\ReleaseManagementDALLibrary.pdb
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ManagerBLLibrary\bin\Debug\ReleaseManagementProjectLibrary.pdb
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ManagerBLLibrary\obj\Debug\ManagerBLLibrary.csprojAssemblyReference.cache
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ManagerBLLibrary\obj\Debug\ManagerBLLibrary.csproj.CoreCompileInputs.cache
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ManagerBLLibrary\obj\Debug\ManagerBLLibrary.csproj.CopyComplete
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ManagerBLLibrary\obj\Debug\ManagerBLLibrary.dll
+C:\Users\thamizhlni.murugesan\source\repos\ReleaseManagementProjectSolution\ManagerBLLibrary\obj\Debug\ManagerBLLibrary.pdb
