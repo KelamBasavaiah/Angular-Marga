@@ -11,7 +11,7 @@ using System.Net.Mail;
 
 namespace ReleaseManagementProject.Controllers
 {
-    [EnableCors("http://localhost:4200","*","PUT")]
+    [EnableCors("http://localhost:4200","*","POST","PUT")]
     public class PasswordController : ApiController
     {
         ManagerBL bl = new ManagerBL();
@@ -34,6 +34,18 @@ namespace ReleaseManagementProject.Controllers
                 SmtpServer.Send(mail);
             }
             return updated;
+        }
+        public bool post(string username, [FromBody]ReleaseManagementModel value)
+        {
+            try
+            {
+                return bl.InsertProjectDetails(username, value);
+
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
         }
     }
 }

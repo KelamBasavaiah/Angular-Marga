@@ -17,10 +17,10 @@ namespace ReleaseManagementProject.Controllers
     {
         ManagerBL bl = new ManagerBL();
         [SkipMyGlobalActionFilter]
-        public List<ReleaseManagementModel> GetProjects(string username)
+        public DateTime GetProjects(string projectId)
       {
-           
-            return bl.GetProjects(username);
+
+            return bl.GetProjectDate(projectId);
 
         }
         [SkipMyGlobalActionFilter]
@@ -30,7 +30,15 @@ namespace ReleaseManagementProject.Controllers
         }
         public bool Post([FromBody]ReleaseManagementModel value)
         {
-            return bl.AssignModuleToDeveloper(value);
+            try
+            {
+                return bl.AssignModuleToTester(value);
+
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
 
         }
     }

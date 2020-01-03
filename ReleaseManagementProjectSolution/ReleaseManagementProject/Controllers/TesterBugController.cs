@@ -28,5 +28,9 @@ namespace ReleaseManagementProject.Controllers
             else
                 return new ReleaseManagementModel();
         }
+        public ReleaseManagementModel delete(string moduleid)
+        {
+            return bl.GetBugFixedModule(moduleid);
+        }
     }
 }

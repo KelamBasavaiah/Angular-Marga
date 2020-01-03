@@ -22,9 +22,9 @@ namespace ReleaseManagementProject.Controllers
             return bl.GetAllModuleNamesAndBugNames(username);
 
         }
-        public IEnumerable<ReleaseManagementModel> Get(string modulename,string value)
+        public IEnumerable<ReleaseManagementModel> Get(string moduleid,string value)
         {
-            return bl.GetAllModuleNamesAndModuleDescription(modulename);
+            return bl.GetAllModuleNamesAndModuleDescription(moduleid);
 
         }
         // PUT: api/ModuleNameAndDescription/5

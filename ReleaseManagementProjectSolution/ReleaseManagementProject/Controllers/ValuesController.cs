@@ -32,7 +32,15 @@ namespace ReleaseManagementProject.Controllers
         // POST api/values
         public bool Post([FromBody]ReleaseManagementModel value)
         {
-            return bl.AssignModuleToTester(value);
+            try
+            {
+                return bl.AssignModuleToTester(value);
+
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
 
         }
 
@@ -45,9 +53,9 @@ namespace ReleaseManagementProject.Controllers
         {
             return bl.UpdateModuleStatusAfterTesting(values.ModuleId);
         }
-        public bool Delete(string projectName)
+        public bool Delete(string projectId)
         {
-            return bl.UpdateCompletedModuleStatus(projectName);
+            return bl.UpdateCompletedModuleStatus(projectId);
         }
         // DELETE api/values/5
        

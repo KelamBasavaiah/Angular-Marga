@@ -31,17 +31,28 @@ namespace ReleaseManagementProject.Controllers
 
 
         }
+        
+        
         //Insert Modules
         public bool Post(string projectName, [FromBody]ReleaseManagementModel[] value)
         {
-            return bl.InsertModuleDetails(projectName, value);
+            try
+            {
+                return bl.InsertModuleDetails(projectName, value);
+
+            }
+            catch(Exception e)
+            {
+                
+                return false;
+            }
         }
 
         //// GET api/values/5
         /////Get All Modules
-        public List<ReleaseManagementModel> Delete(string projectName)
+        public List<ReleaseManagementModel> Delete(string projectId)
         {
-            return bl.GetAllModules(projectName);
+            return bl.GetAllModules(projectId);
         }
     }
 

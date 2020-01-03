@@ -20,9 +20,9 @@ namespace ReleaseManagementProject.Controllers
         {
             return bl.GetAllTesterProjects(username);
         }
-        public IEnumerable<ReleaseManagementModel> Get(string P_Name,string username)
+        public IEnumerable<ReleaseManagementModel> Get(string P_id,string username)
         {
-            return bl.GetAllTesterModules(P_Name,username);
+            return bl.GetAllTesterModules(P_id,username);
         }
         public bool Put(string value,[FromBody]ReleaseManagementModel manager)
         {

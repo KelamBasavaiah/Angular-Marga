@@ -23,9 +23,9 @@ namespace ReleaseManagementProject.Controllers
             return bl.GetAllProjectsForDeveloperFromManager(username);
            
         }
-        public List<ReleaseManagementModel> Get(string projectName,string username)
+        public List<ReleaseManagementModel> Get(string projectId,string username)
         {
-            return bl.GetAllModulesForDeveloper(projectName,username);
+            return bl.GetAllModulesForDeveloper(projectId,username);
         }
         public bool Put(string value,ReleaseManagementModel manager)
         {
@@ -39,7 +39,7 @@ namespace ReleaseManagementProject.Controllers
                 mail.From = new MailAddress("divhyadarsh429@gmail.com");
                 mail.To.Add(email);
                 mail.Subject = "Module Status Update To Manager";
-                mail.Body = manager.Username + "" + "Modules Completed Successfully";
+                mail.Body = manager.Username + " " + "Modules Completed Successfully";
                 SmtpServer.Port = 587;
                 SmtpServer.Credentials = new System.Net.NetworkCredential("divhyadarsh429@gmail.com", "dbinfosys29");
                 SmtpServer.EnableSsl = true;
@@ -49,7 +49,9 @@ namespace ReleaseManagementProject.Controllers
         }
 
 
-           
-        }
+
+
     }
+
 }
+

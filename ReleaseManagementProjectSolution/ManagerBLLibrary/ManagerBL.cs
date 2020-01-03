@@ -33,36 +33,38 @@ namespace ManagerBLLibrary
             foreach (DataRow row in dsGetProject.Tables[0].Rows)
             {
                 project = new ReleaseManagementModel();
-                project.ProjectName = row[0].ToString();
-                project.ProjectDescription = row[1].ToString();
-                project.ProjectStartDate = Convert.ToDateTime(row[2].ToString());
-                project.ProjectEndDate = Convert.ToDateTime(row[3].ToString());             
+                project.ProjectId = row[0].ToString();
+                project.ProjectName = row[1].ToString();
+                project.ProjectDescription = row[2].ToString();
+                project.ProjectStartDate = Convert.ToDateTime(row[3].ToString());
+                project.ProjectEndDate = Convert.ToDateTime(row[4].ToString());             
                 projects.Add(project);
             }
             return projects;
 
         }
         //Get All modules assigned by manager 
-        public List<ReleaseManagementModel> GetAllModulesForDeveloper(string projectName,string username)
+        public List<ReleaseManagementModel> GetAllModulesForDeveloper(string projectId,string username)
         {
             List<ReleaseManagementModel> modules = new List<ReleaseManagementModel>();
-            DataSet dsGetModules = dal.GetAllmodulesForDeveloper(projectName,username);
+            DataSet dsGetModules = dal.GetAllmodulesForDeveloper(projectId,username);
             ReleaseManagementModel module;
             foreach (DataRow row in dsGetModules.Tables[0].Rows)
             {
                 module = new ReleaseManagementModel();
-                module.ModuleName = row[0].ToString();
-                module.ModuleDescription = row[1].ToString();
-                module.ModuleStatus = row[2].ToString();
-                module.ModuleStartDate = Convert.ToDateTime(row[3].ToString());
-                module.ModuleEndDate = Convert.ToDateTime(row[4].ToString());
+                module.ModuleId = row[0].ToString();
+                module.ModuleName = row[1].ToString();
+                module.ModuleDescription = row[2].ToString();
+                module.ModuleStatus = row[3].ToString();
+                module.ModuleStartDate = Convert.ToDateTime(row[4].ToString());
+                module.ModuleEndDate = Convert.ToDateTime(row[5].ToString());
                 modules.Add(module);
             }
             return modules;
         }
-        public bool UpdateModuleStatustoManager(string module_name)
+        public bool UpdateModuleStatustoManager(string module_Id)
         {
-            return dal.UpdateModuleStatustoManager(module_name);
+            return dal.UpdateModuleStatustoManager(module_Id);
         }
 
         //Get All ModuleNames And BugNames and BugStatus//
@@ -74,9 +76,10 @@ namespace ManagerBLLibrary
             foreach (DataRow row in dsGetAllModules.Tables[0].Rows)
             {
                 bug = new ReleaseManagementModel();
-                bug.ModuleName = row[0].ToString();
-                bug.Bugstatus = row[1].ToString();
-                bug.Bugname = row[2].ToString();
+                bug.ModuleId = row[0].ToString();
+                bug.ModuleName = row[1].ToString();
+                bug.Bugstatus = row[2].ToString();
+                bug.Bugname = row[3].ToString();
 
                 Modules.Add(bug);
             }
@@ -84,16 +87,17 @@ namespace ManagerBLLibrary
 
         }
         // Get All ModuleNames And ModuleDescription//
-        public List<ReleaseManagementModel> GetAllModuleNamesAndModuleDescription(string modulename)
+        public List<ReleaseManagementModel> GetAllModuleNamesAndModuleDescription(string moduleId)
         {
             List<ReleaseManagementModel> Modules = new List<ReleaseManagementModel>();
-            DataSet dsGetAllModulesAndModuleDescription = dal.GetModuleNamesAndModuleDescription(modulename);
+            DataSet dsGetAllModulesAndModuleDescription = dal.GetModuleNamesAndModuleDescription(moduleId);
             ReleaseManagementModel bug;
             foreach (DataRow row in dsGetAllModulesAndModuleDescription.Tables[0].Rows)
             {
                 bug = new ReleaseManagementModel();
-                bug.ModuleName = row[0].ToString();
-                bug.ModuleDescription = row[1].ToString();
+                bug.ModuleId = row[0].ToString();
+                bug.ModuleName = row[1].ToString();
+                bug.ModuleDescription = row[2].ToString();
                 Modules.Add(bug);
             }
             return Modules;
@@ -101,10 +105,10 @@ namespace ManagerBLLibrary
 
 
         //Update BugStatus To Tester//
-        public bool UpdateBugStatusToTester(string modulename)
+        public bool UpdateBugStatusToTester(string moduleId)
         {
             string bugStatus = "Bug Fixed";
-            return dal.UpdateBugStatusToTester(modulename,bugStatus);
+            return dal.UpdateBugStatusToTester(moduleId,bugStatus);
         }
         //Get BugStatus From Tester//
 
@@ -115,29 +119,30 @@ namespace ManagerBLLibrary
             return dal.GetAllTesterProjects(username);
 
         }
-        public List<ReleaseManagementModel> GetAllTesterModules(string P_Name,string username)
+        public List<ReleaseManagementModel> GetAllTesterModules(string P_id,string username)
         {
-            return dal.GetAllTesterModules(P_Name,username);
+            return dal.GetAllTesterModules(P_id,username);
         }
-        public bool UpdateModuleStatusByTester(string module_name)
+        public bool UpdateModuleStatusByTester(string module_Id)
         {
-            return dal.UpdateModuleStatusByTester(module_name);
+            return dal.UpdateModuleStatusByTester(module_Id);
         }
         //tester2
         public List<ReleaseManagementModel> bugFixedModuleData(string tname)
         {
             return dal.bugFixedModuleData(tname);
         }
-        public ReleaseManagementModel GetBugFixedModule(string modulename)
+        public ReleaseManagementModel GetBugFixedModule(string moduleId)
         {
             
-            DataSet dsGetBugFixedModules = dal.GetBugFixedModules(modulename);
+            DataSet dsGetBugFixedModules = dal.GetBugFixedModules(moduleId);
             ReleaseManagementModel bugFixedModule = new ReleaseManagementModel();
             foreach (DataRow row in dsGetBugFixedModules.Tables[0].Rows)
             {
-                bugFixedModule.ModuleName = row[0].ToString();
-                bugFixedModule.ModuleDescription = row[1].ToString();
-                bugFixedModule.ModuleStatus = row[2].ToString();
+                bugFixedModule.ModuleId = row[0].ToString();
+                bugFixedModule.ModuleName = row[1].ToString();
+                bugFixedModule.ModuleDescription = row[2].ToString();
+                bugFixedModule.ModuleStatus = row[3].ToString();
             }
             return bugFixedModule;
         }
@@ -158,7 +163,7 @@ namespace ManagerBLLibrary
             {
                 project = new ReleaseManagementModel();
                 project.ProjectId = row[0].ToString();
-                project.ProjectName = row[0].ToString();
+                project.ProjectName = row[1].ToString();
                 projects.Add(project);
             }
             DataSet dsGetAllAssignedModules;
@@ -166,7 +171,6 @@ namespace ManagerBLLibrary
             List<ReleaseManagementModel> assignedModules = new List<ReleaseManagementModel>();
             for (int i = 0; i < projects.Count; i++)
             {
-               
                 dsGetAllAssignedModules = dal.GetAllAssignedModules(projects[i].ProjectId);
                 foreach (DataRow row in dsGetAllAssignedModules.Tables[0].Rows)
                 {
@@ -176,10 +180,9 @@ namespace ManagerBLLibrary
                     modules.ModuleStatus = row[2].ToString();
                     modules.ModuleId = row[3].ToString();
                     assignedModules.Add(modules);
-                    
+
 
                 }
-                
             }
 
             DataSet dsGetAllDeveloperName = dal.GetAllDeveloperName();
@@ -226,21 +229,13 @@ namespace ManagerBLLibrary
                 }
 
             }
-            for (int i=0;i<assignedModules.Count;i++)
-            {
-                if (assignedModules[i].ModuleStatus == "Completed"){
-                    assignedModules.Remove(assignedModules[i]);
-
-                }
-                if(assignedModules[i].ModuleStatus=="Not Started")
-                {
-                    assignedModules.Remove(assignedModules[i]);
-                }
-
-            }
+            
             return assignedModules;
 
         }
+
+       
+
         public List<ReleaseManagementModel> GetAllEmployees()
         {
             List<ReleaseManagementModel> employees = new List<ReleaseManagementModel>();
@@ -249,8 +244,8 @@ namespace ManagerBLLibrary
             foreach (DataRow row in dsGetAllEmployees.Tables[0].Rows)
             {
                 employee = new ReleaseManagementModel();
-                employee.EmployeeId = row[0].ToString();
-                employee.EmployeeName = row[1].ToString();
+                employee.EmployeeId = row[1].ToString();
+                employee.EmployeeName = row[2].ToString();
                 employees.Add(employee);
             }
             return employees;
@@ -293,11 +288,15 @@ namespace ManagerBLLibrary
                 {
                     employee = new ReleaseManagementModel();
                     employee.EmployeeName = allEmployees[i].EmployeeName;
+                    employee.EmployeeId = allEmployees[i].EmployeeId;
                     Employees.Add(employee);
                 }
                 
             }
-            return Employees;
+            if (Employees.Count != 0)
+                return Employees;
+            else
+                return allEmployees;
 
         }
         public List<ReleaseManagementModel> GetAllModuleDetails()
@@ -316,102 +315,49 @@ namespace ManagerBLLibrary
         }
         public bool AssignModuleToDeveloper(ReleaseManagementModel manager)
         {
-            List<ReleaseManagementModel> modules = GetAllModuleDetails();
-            for(int i = 0; i < modules.Count; i++)
-            {
-                if (modules[i].ModuleName == manager.ModuleName)
-                {
-                    manager.ModuleId = modules[i].ModuleId;
-                }
-            }
-            string moduleId = manager.ModuleId;
-            List<ReleaseManagementModel> employees = new List<ReleaseManagementModel>();
-            DataSet dsGetAllEmployees = dal.GetAllEmployees();
-            ReleaseManagementModel employee;
-            foreach (DataRow row in dsGetAllEmployees.Tables[0].Rows)
-            {
-                employee = new ReleaseManagementModel();
-                employee.EmployeeId = row[0].ToString();
-                employee.EmployeeName = row[1].ToString();
-                employees.Add(employee);
-            }
-            for(int i = 0; i < employees.Count; i++)
-            {
-                if (employees[i].EmployeeName == manager.DeveloperName)
-                {
-                    manager.EmployeeId = employees[i].EmployeeId;
-                }
-            }
-            string EmpId = manager.EmployeeId;
-            string status = "In Progress";
-            string moduleName = manager.ModuleName;
+            manager.ModuleStatus = "In Progress(D)";
             bool modStatus = false;
             bool insertRoleStatus = false;
-            bool assignedStatus= dal.AssignModuleToEmployee(manager);
+            string employeeId = dal.GetEmployeeIdForName(manager.EmployeeName);
+            manager.EmployeeId = employeeId;
+            bool assignedStatus = dal.AssignModuleToEmployee(manager);
             if (assignedStatus == true)
             {
-                 modStatus= dal.UpdateModuleStatus(moduleName, status);
+                modStatus = dal.UpdateModuleStatus(manager.ModuleId, manager.ModuleStatus);
             }
             else
             {
                 modStatus = false;
             }
-            string role = "developer";
-           
+            string role = "Developer";
             if (modStatus == true)
             {
-                insertRoleStatus= dal.InsertRole(EmpId,role,moduleId);
+                insertRoleStatus = dal.InsertRole(manager.EmployeeId, role, manager.ModuleId);
             }
             return insertRoleStatus;
 
         }
         public bool AssignModuleToTester(ReleaseManagementModel manager)
         {
-            List<ReleaseManagementModel> modules = GetAllModuleDetails();
-            for (int i = 0; i < modules.Count; i++)
-            {
-                if (modules[i].ModuleName == manager.ModuleName)
-                {
-                    manager.ModuleId = modules[i].ModuleId;
-                    break;
-                }
-            }
-            string moduleId = manager.ModuleId;
-            List<ReleaseManagementModel> employees = new List<ReleaseManagementModel>();
-            DataSet dsGetAllEmployees = dal.GetAllEmployees();
-            ReleaseManagementModel employee;
-            foreach (DataRow row in dsGetAllEmployees.Tables[0].Rows)
-            {
-                employee = new ReleaseManagementModel();
-                employee.EmployeeId = row[0].ToString();
-                employee.EmployeeName = row[1].ToString();
-                employees.Add(employee);
-            }
-            for (int i = 0; i < employees.Count; i++)
-            {
-                if (employees[i].EmployeeName == manager.TesterName)
-                {
-                    manager.EmployeeId = employees[i].EmployeeId;
-                }
-            }
-            string EmpId = manager.EmployeeId;
-            string status = "In Progress";
-            string moduleName = manager.ModuleName;
+            
+             manager.ModuleStatus = "In Progress(T)";           
             bool modStatus = false;
             bool insertRoleStatus = false;
+            string empId = dal.GetEmployeeIdForName(manager.EmployeeName);
+            manager.EmployeeId = empId;
             bool assignedStatus = dal.AssignModuleToEmployee(manager);
             if (assignedStatus == true)
             {
-                modStatus = dal.UpdateModuleStatus(moduleName, status);
+                modStatus = dal.UpdateModuleStatus(manager.ModuleId,manager.ModuleStatus);
             }
             else
             {
                 modStatus = false;
             }
-            string role = "tester";           
+            string role = "Tester";           
             if (modStatus == true)
             {
-                insertRoleStatus = dal.InsertRole(EmpId,role,moduleId);
+                insertRoleStatus = dal.InsertRole(manager.EmployeeId,role,manager.ModuleId);
             }
             return insertRoleStatus;
 
@@ -508,7 +454,7 @@ namespace ManagerBLLibrary
         }
         public List<ReleaseManagementModel> GetProjects(string username)
         {
-            DataSet dsGetprojectId = dal.GetProjectId(username);
+            DataSet dsGetprojectId = dal.GetProjectDetails(username);
             List<ReleaseManagementModel> projects = new List<ReleaseManagementModel>();
             ReleaseManagementModel project;
             
@@ -528,9 +474,9 @@ namespace ManagerBLLibrary
 
             return projects;
         }
-        public bool UpdateCompletedModuleStatus(string projectname)
+        public bool UpdateCompletedModuleStatus(string projectId)
         {
-            return dal.UpdateCompletedmoduleStatus(projectname);
+            return dal.UpdateCompletedmoduleStatus(projectId);
         }
         public List<ReleaseManagementModel> GetAllCompletedProjects(string username)
         {
@@ -575,8 +521,14 @@ namespace ManagerBLLibrary
         public bool InsertProjectDetails(string username, ReleaseManagementModel manager)
         {
             string projectName = manager.ProjectName;
+            int count = dal.GetProjectCount(projectName);
             string projectId = "";
-            bool status = dal.InsertProjects(manager);
+
+            bool status = false;
+            if (count == 0)
+            {
+                status = dal.InsertProjects(manager);
+            }
             string employeeId = dal.GetEmployeeId(username);
             if (status == true)
             {
@@ -586,28 +538,35 @@ namespace ManagerBLLibrary
             return dal.InsertRoles(employeeId, role, projectId);
 
         }
+        public DateTime GetProjectDate(string projectId)
+        {
+            return dal.GetProjectDate(projectId);
+        }
         public bool InsertModuleDetails(string projectName, ReleaseManagementModel[] manager)
         {
             bool inserted = false;
             string projectId = dal.GetProjectIdForManager(projectName);
+            int count = 0;
             foreach (var item in manager)
             {
                 item.ProjectId = projectId;
-                item.ModuleStatus = "Not started";
-                inserted = dal.InsertProjectModules(item);
+                item.ModuleStatus = "Not Started";
+                count = dal.GetModuleCountToInsert(item.ModuleName);
+                if (count == 0)
+                {
+                    inserted = dal.InsertProjectModules(item);
+                }
             }
             return inserted;
-
-
         }
 
         public List<ReleaseManagementModel> GetAllProjects(string username)
         {
             return dal.GetAllProjects(username);
         }
-        public List<ReleaseManagementModel> GetAllModules(string project_name)
+        public List<ReleaseManagementModel> GetAllModules(string project_Id)
         {
-            return dal.GetAllModules(project_name);
+            return dal.GetAllModules(project_Id);
         }
         public string GetEmail(string username)
         {
@@ -618,6 +577,33 @@ namespace ManagerBLLibrary
             bool updated = false;
             updated = dal.UpdatePassword(username, password);
             return updated;
+        }
+
+        public List<ReleaseManagementModel> GetAllEmps()
+        {
+            return dal.GetAllEmployeesForAdmin();
+        }
+        public bool InsertEmpDetails(ReleaseManagementModel[] admin)
+        {
+            bool inserted = false;
+            foreach(var item in admin)
+            {
+                inserted = dal.InsertEmployee(item);
+            }
+
+            return inserted;
+
+        }
+
+        public bool UpdateEmpDetails(ReleaseManagementModel admin)
+        {
+            bool updated = false;
+            
+            updated = dal.UpdateEmployee(admin);
+
+
+            return updated;
+
         }
     }
 }

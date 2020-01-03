@@ -43,7 +43,7 @@ namespace ReleaseManagementProject.Controllers
         //}
         public string Post(ReleaseManagementModel userLogin)
         {
-            string token = "";
+            string token = null;
             bool value = bl.checkinguserlogin(userLogin.Username, userLogin.Password);
             if (value)
 
@@ -58,7 +58,7 @@ namespace ReleaseManagementProject.Controllers
             }
             else
             {
-                throw new HttpResponseException(HttpStatusCode.Unauthorized);
+                return token; 
             }
         }
         #region Private Methods
@@ -75,9 +75,24 @@ namespace ReleaseManagementProject.Controllers
             };
         }
         #endregion
-            
+
+        [SkipMyGlobalActionFilter]
+        public bool Get(string username, string password)
+        {
+
+            if (bl.checkingadminlogin(username, password) == true)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
 
         }
+
+
+    }
 
     }
 

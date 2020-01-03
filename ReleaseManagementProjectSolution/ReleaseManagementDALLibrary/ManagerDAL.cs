@@ -12,28 +12,31 @@ namespace ReleaseManagementDALLibrary
     public class ManagerDAL
     {
         SqlConnection conn;
-        SqlCommand cmdcheckadmin, cmdcheckuser,cmdGetAllAssignedModules, cmdGetAllEmployees,cmdGetAllAssignedEmployees, cmdAssignModuleToEmployee, 
-            cmdGetAllModuleDetails, cmdUpdatemoduleStatus,cmdGetAllDeveloperName,cmdGetAllTesterName,cmdGetAllCompletedModules,
-            cmdGetEmployeesWithRole,cmdInsertRole,cmdGetProjectId,cmdGetEmployeeName,
-            cmdGetModuleCount,cmdGetCompletedModuleCount,cmdUpdateCompletedmoduleStatus, cmdGetCompletedModulesCount,
-            cmdGetAllCompletedProject,
+        SqlCommand cmdcheckadmin, cmdcheckuser, cmdGetAllAssignedModules, cmdGetAllEmployees, cmdGetAllAssignedEmployees, cmdAssignModuleToEmployee,
+            cmdGetAllModuleDetails, cmdUpdatemoduleStatus, cmdGetAllDeveloperName, cmdGetAllTesterName, cmdGetAllCompletedModules,
+            cmdGetEmployeesWithRole, cmdInsertRole, cmdGetProjectId, cmdGetEmployeeName,
+            cmdGetModuleCount, cmdGetCompletedModuleCount, cmdUpdateCompletedmoduleStatus, cmdGetCompletedModulesCount,
+            cmdGetAllCompletedProject, cmdGetEmployeeIdForName, cmdGetProjectDateForManager,cmdGetProjectcount,
+            cmdGetModuleCountToInsert,
             //developer1
             cmdGetAllProjects, cmdGetAllModules, cmdUpdatemoduleStatusForManager,
             //developer2
             cmdGetAllModuleNamesAndBugNames, cmdGetModuleNamesAndModuleDescription,
-            cmdUpdatemoduleStatusAfterBugFixed, 
+            cmdUpdatemoduleStatusAfterBugFixed,
             //tester1
             cmdGetAllTestProjects, cmdGetAllTestModules, cmdUpdatemoduleStatusByTester,
             //tester2
-            cmdFixModuleData,cmdCreateBug,cmdGetBugFixedModules,
+            cmdFixModuleData, cmdCreateBug, cmdGetBugFixedModules,
             //ManagerFirstPart
             cmdInsertProjects, cmdInsertRoles, cmdInsertModules, cmdGetEmployeeId, cmdGetAllProjectsForManager,
-            cmdGetAllModulesForManager,cmdGetProjectIdForManager,
+            cmdGetAllModulesForManager, cmdGetProjectIdForManager,
             //mail
             cmdGetMail,
             //cmdUpdatePass
-            cmdUpdatepass;
-            
+            cmdUpdatepass,
+        //Admin
+        cmdInsertEmp, cmdGetEmail, cmdGetEmps, cmdUpdateEmps;
+
         SqlDataAdapter daGetAllAssignedModules, daGetAllEmployees, daGetAllAssignedEmployees, daGetAllCompletedModules,
             daGetAllCompletedProject,
             daGetAllModuleDetails, daGetEmployeesWithRole, daGetAllDeveloperName, daGetAllTesterName, daGetProjectId,
@@ -110,11 +113,11 @@ namespace ReleaseManagementDALLibrary
             return dsGetProject;
         }
         //Get all modules for a particular project assigned by Manager
-        public DataSet GetAllmodulesForDeveloper(string projectName,string username)
+        public DataSet GetAllmodulesForDeveloper(string projectId,string username)
         {
             cmdGetAllModules = new SqlCommand("Proc_GetModulesForDeveloper", conn);
             DataSet dsGetModules = new DataSet();
-            cmdGetAllModules.Parameters.AddWithValue("@P_Name", projectName);
+            cmdGetAllModules.Parameters.AddWithValue("@P_Id", projectId);
             cmdGetAllModules.Parameters.AddWithValue("@username", username);
             daGetModules = new SqlDataAdapter(cmdGetAllModules);
             daGetModules.SelectCommand.CommandType = CommandType.StoredProcedure;
@@ -122,11 +125,11 @@ namespace ReleaseManagementDALLibrary
             return dsGetModules;
         }
         //update status from developer to manager
-        public bool UpdateModuleStatustoManager(string module_name)
+        public bool UpdateModuleStatustoManager(string module_Id)
         {
             bool updatedModuleStatus = false;
             cmdUpdatemoduleStatusForManager = new SqlCommand("proc_UpdateModuleStatusToManagerFromDeveloper", conn);
-            cmdUpdatemoduleStatusForManager.Parameters.AddWithValue("@module_name", module_name);
+            cmdUpdatemoduleStatusForManager.Parameters.AddWithValue("@module_Id", module_Id);
             //cmdUpdatemoduleStatus.Parameters.AddWithValue("@module_status", developer.Module_Status1);
             cmdUpdatemoduleStatusForManager.CommandType = CommandType.StoredProcedure;
             if (conn.State == ConnectionState.Open)
@@ -151,10 +154,10 @@ namespace ReleaseManagementDALLibrary
             return dsGetModuleNamesAndBugNames;
         }
         //Get AllModuleNamesAndModuledescription//
-        public DataSet GetModuleNamesAndModuleDescription(string modulename)
+        public DataSet GetModuleNamesAndModuleDescription(string moduleId)
         {
             cmdGetModuleNamesAndModuleDescription = new SqlCommand("proc_GetAllBugModules", conn);
-            cmdGetModuleNamesAndModuleDescription.Parameters.AddWithValue("@modulename", modulename);
+            cmdGetModuleNamesAndModuleDescription.Parameters.AddWithValue("@moduleId", moduleId);
             DataSet dsGetModuleNamesAndModuleDescription = new DataSet();
             daGetModuleNamesAndDescription = new SqlDataAdapter(cmdGetModuleNamesAndModuleDescription);
             daGetModuleNamesAndDescription.SelectCommand.CommandType = CommandType.StoredProcedure;
@@ -164,17 +167,17 @@ namespace ReleaseManagementDALLibrary
         }
 
         //Update BugStatus to the Tester//
-        public bool UpdateBugStatusToTester(string moduleName, string bugStatus)
+        public bool UpdateBugStatusToTester(string moduleId, string bugStatus)
         {
             bool updatedBugStatus = false;
             cmdUpdatemoduleStatusAfterBugFixed = new SqlCommand("proc_UpdateBugStatusToTester", conn);
-            cmdUpdatemoduleStatusAfterBugFixed.Parameters.AddWithValue("@modulename", moduleName);
+            cmdUpdatemoduleStatusAfterBugFixed.Parameters.AddWithValue("@moduleId", moduleId);
             cmdUpdatemoduleStatusAfterBugFixed.Parameters.AddWithValue("@bugStatus", bugStatus);
             cmdUpdatemoduleStatusAfterBugFixed .CommandType = CommandType.StoredProcedure;
             if (conn.State == ConnectionState.Open)
                 conn.Close();
             conn.Open();
-            if (cmdUpdatemoduleStatus.ExecuteNonQuery() > 0)
+            if (cmdUpdatemoduleStatusAfterBugFixed.ExecuteNonQuery() > 0)
             {
                 updatedBugStatus = true;
             }
@@ -194,20 +197,21 @@ namespace ReleaseManagementDALLibrary
             while (drprojects.Read())
             {
                 tests = new ReleaseManagementModel();
-                tests.ProjectName = drprojects[0].ToString();
-                tests.ProjectDescription = drprojects[1].ToString();
-                tests.ProjectStartDate =Convert.ToDateTime( drprojects[2].ToString());
-                tests.ProjectEndDate = Convert.ToDateTime(drprojects[3].ToString());
+                tests.ProjectId = drprojects[0].ToString();
+                tests.ProjectName = drprojects[1].ToString();
+                tests.ProjectDescription = drprojects[2].ToString();
+                tests.ProjectStartDate =Convert.ToDateTime( drprojects[3].ToString());
+                tests.ProjectEndDate = Convert.ToDateTime(drprojects[4].ToString());
                 testers.Add(tests);
             }
             return testers;
         }
-        public List<ReleaseManagementModel> GetAllTesterModules(string P_Name,string username)
+        public List<ReleaseManagementModel> GetAllTesterModules(string P_Id,string username)
         {
             ReleaseManagementModel tests = null;
             List<ReleaseManagementModel> testers = new List<ReleaseManagementModel>();
             cmdGetAllTestModules = new SqlCommand("Proc_GetModulesForTester", conn);
-            cmdGetAllTestModules.Parameters.AddWithValue("@p_name", P_Name);
+            cmdGetAllTestModules.Parameters.AddWithValue("@p_Id", P_Id);
             cmdGetAllTestModules.Parameters.AddWithValue("@username", username);
             cmdGetAllTestModules.CommandType = CommandType.StoredProcedure;
             conn.Open();
@@ -215,20 +219,21 @@ namespace ReleaseManagementDALLibrary
             while (drmodules.Read())
             {
                 tests = new ReleaseManagementModel();
-                tests.ModuleName = drmodules[0].ToString();
-                tests.ModuleDescription = drmodules[1].ToString();
-                tests.ModuleStatus = drmodules[2].ToString();
-                tests.ModuleStartDate = Convert.ToDateTime(drmodules[3].ToString());
-                tests.ModuleEndDate = Convert.ToDateTime(drmodules[4].ToString());
+                tests.ModuleId = drmodules[0].ToString();
+                tests.ModuleName = drmodules[1].ToString();
+                tests.ModuleDescription = drmodules[2].ToString();
+                tests.ModuleStatus = drmodules[3].ToString();
+                tests.ModuleStartDate = Convert.ToDateTime(drmodules[4].ToString());
+                tests.ModuleEndDate = Convert.ToDateTime(drmodules[5].ToString());
                 testers.Add(tests);
             }
             return testers;
         }
-        public bool UpdateModuleStatusByTester(string module_name)
+        public bool UpdateModuleStatusByTester(string module_id)
         {
             bool updatedModuleStatus = false;
             cmdUpdatemoduleStatusByTester = new SqlCommand("proc_UpdateModuleStatusByTester", conn);
-            cmdUpdatemoduleStatusByTester.Parameters.AddWithValue("@module_name", module_name);
+            cmdUpdatemoduleStatusByTester.Parameters.AddWithValue("@module_Id", module_id);
             cmdUpdatemoduleStatusByTester.CommandType = CommandType.StoredProcedure;
             if (conn.State == ConnectionState.Open)
                 conn.Close();
@@ -257,20 +262,21 @@ namespace ReleaseManagementDALLibrary
             while (drBFMM.Read())
             {
                 bFMM = new ReleaseManagementModel();
-                bFMM.ModuleName = drBFMM[0].ToString();
-                bFMM.Bugname = drBFMM[1].ToString();
-                bFMM.Bugstatus = drBFMM[2].ToString();
+                bFMM.ModuleId = drBFMM[0].ToString();
+                bFMM.ModuleName = drBFMM[1].ToString();
+                bFMM.Bugname = drBFMM[2].ToString();
+                bFMM.Bugstatus = drBFMM[3].ToString();
                 bFMMs.Add(bFMM);
 
             }
             conn.Close();
             return bFMMs;
         }
-        public DataSet GetBugFixedModules(string modulename)
+        public DataSet GetBugFixedModules(string moduleId)
         {
             cmdGetBugFixedModules = new SqlCommand("proc_testerBugModules", conn);
             DataSet dsGetBugFixedModules = new DataSet();
-            cmdGetBugFixedModules.Parameters.AddWithValue("@modulename",modulename);
+            cmdGetBugFixedModules.Parameters.AddWithValue("@moduleId",moduleId);
             daGetBugFixedModules = new SqlDataAdapter(cmdGetBugFixedModules);
             daGetBugFixedModules.SelectCommand.CommandType = CommandType.StoredProcedure;
             daGetBugFixedModules.Fill(dsGetBugFixedModules);
@@ -281,7 +287,7 @@ namespace ReleaseManagementDALLibrary
         {
             cmdCreateBug = new SqlCommand("proc_createBug", conn);
             cmdCreateBug.CommandType = CommandType.StoredProcedure;
-            cmdCreateBug.Parameters.AddWithValue("@module_name", tCB.ModuleName);
+            cmdCreateBug.Parameters.AddWithValue("@module_Id", tCB.ModuleId);
             cmdCreateBug.Parameters.AddWithValue("@bug_name", tCB.Bugname);
             cmdCreateBug.Parameters.AddWithValue("@bug_status", tCB.Bugstatus);
             conn.Open();
@@ -363,6 +369,40 @@ namespace ReleaseManagementDALLibrary
             }
             conn.Close();
             return employeeName;
+        }
+        public int GetProjectCount(string projectName)
+        {
+            int projectCount = 0;
+            cmdGetProjectcount = new SqlCommand("proc_GetProjectCount", conn);
+            cmdGetProjectcount.Parameters.AddWithValue("@projectName", projectName);
+            cmdGetProjectcount.CommandType = CommandType.StoredProcedure;
+            if (conn.State == ConnectionState.Open)
+                conn.Close();
+            conn.Open();
+            SqlDataReader project_Count = cmdGetProjectcount.ExecuteReader();
+            while (project_Count.Read())
+            {
+                projectCount = Convert.ToInt32(project_Count[0].ToString());
+            }
+            conn.Close();
+            return projectCount;
+        }
+        public int GetModuleCountToInsert(string moduleName)
+        {
+            int moduleCount = 0;
+            cmdGetModuleCountToInsert = new SqlCommand("proc_GetModuleCountToInsert", conn);
+            cmdGetModuleCountToInsert.Parameters.AddWithValue("@moduleName", moduleName);
+            cmdGetModuleCountToInsert.CommandType = CommandType.StoredProcedure;
+            if (conn.State == ConnectionState.Open)
+                conn.Close();
+            conn.Open();
+            SqlDataReader module_Count = cmdGetModuleCountToInsert.ExecuteReader();
+            while (module_Count.Read())
+            {
+                moduleCount = Convert.ToInt32(module_Count[0].ToString());
+            }
+            conn.Close();
+            return moduleCount;
         }
         public DataSet GetAllEmployees()
         {
@@ -451,6 +491,18 @@ namespace ReleaseManagementDALLibrary
 
 
         }
+        public DataSet GetProjectDetails(string userName)
+        {
+
+
+            cmdGetProjectId = new SqlCommand("proc_GetProjectId", conn);
+            cmdGetProjectId.Parameters.AddWithValue("@userName", userName);
+            DataSet dsGetProjectId = new DataSet();
+            cmdGetProjectId.CommandType = CommandType.StoredProcedure;
+            daGetProjectId = new SqlDataAdapter(cmdGetProjectId);
+            daGetProjectId.Fill(dsGetProjectId);
+            return dsGetProjectId;
+        }
         public DataSet GetAllCompletedModules(string projectId)
         {
             cmdGetAllCompletedModules = new SqlCommand("proc_GetCompletedModules", conn);
@@ -497,11 +549,11 @@ namespace ReleaseManagementDALLibrary
             return moduleCount;
 
         }
-        public bool UpdateCompletedmoduleStatus(string projectname)
+        public bool UpdateCompletedmoduleStatus(string projectId)
         {
             bool updatedModuleStatus = false;
             cmdUpdateCompletedmoduleStatus = new SqlCommand("proc_UpdateCompletedModuleStatus", conn);
-            cmdUpdateCompletedmoduleStatus.Parameters.AddWithValue("@projectName", projectname);
+            cmdUpdateCompletedmoduleStatus.Parameters.AddWithValue("@projectId", projectId);
             cmdUpdateCompletedmoduleStatus.CommandType = CommandType.StoredProcedure;
             if (conn.State == ConnectionState.Open)
                 conn.Close();
@@ -572,7 +624,7 @@ namespace ReleaseManagementDALLibrary
         public bool InsertRoles(string employeeId, string role, string projectId)
         {
             bool _insertedrole = false;
-            cmdInsertRoles = new SqlCommand("proc_InsertRole", conn);
+            cmdInsertRoles = new SqlCommand("proc_InsertRoleForManager", conn);
             cmdInsertRoles.Parameters.Add("@empid", SqlDbType.VarChar, 20);
             cmdInsertRoles.Parameters.Add("@role", SqlDbType.VarChar, 40);
             cmdInsertRoles.Parameters.Add("@proj_id", SqlDbType.VarChar, 4);
@@ -589,6 +641,26 @@ namespace ReleaseManagementDALLibrary
                 _insertedrole = false;
             conn.Close();
             return _insertedrole;
+        }
+        //Get Project Date
+        public DateTime GetProjectDate(string projectId)
+        {
+            cmdGetProjectDateForManager = new SqlCommand("proc_GetProjectDate", conn);
+            cmdGetProjectDateForManager.Parameters.AddWithValue("@projectId", projectId);
+            cmdGetProjectDateForManager.CommandType = CommandType.StoredProcedure;
+            if (conn.State == ConnectionState.Open)
+                conn.Close();
+            conn.Open();
+            DateTime projDate = DateTime.Now;
+            SqlDataReader drprojid = cmdGetProjectDateForManager.ExecuteReader();
+            while (drprojid.Read())
+            {
+                projDate = Convert.ToDateTime(drprojid[0].ToString());
+            }
+            conn.Close();
+
+            return projDate;
+
         }
         //Insert modules
         public bool InsertProjectModules(ReleaseManagementModel manager)
@@ -637,6 +709,24 @@ namespace ReleaseManagementDALLibrary
             conn.Close();
             return empId;
         }
+        public string GetEmployeeIdForName(string empname)
+        {
+            cmdGetEmployeeIdForName = new SqlCommand("proc_GetEmployeeIdForName", conn);
+            cmdGetEmployeeIdForName.Parameters.AddWithValue("@empname", empname);
+            cmdGetEmployeeIdForName.CommandType = CommandType.StoredProcedure;
+            if (conn.State == ConnectionState.Open)
+                conn.Close();
+            conn.Open();
+            string empId = "";
+            SqlDataReader drempid = cmdGetEmployeeIdForName.ExecuteReader();
+            while (drempid.Read())
+            {
+                empId = drempid[0].ToString();
+
+            }
+            conn.Close();
+            return empId;
+        }
         //Get Project Id
         public string GetProjectIdForManager(string projectname)
         {
@@ -673,20 +763,21 @@ namespace ReleaseManagementDALLibrary
             while (drmanagers.Read())
             {
                 manager = new ReleaseManagementModel();
-                manager.ProjectName = drmanagers[0].ToString();
-                manager.ProjectDescription = drmanagers[1].ToString();
-                manager.ProjectStartDate = Convert.ToDateTime(drmanagers[2]);
-                manager.ProjectEndDate = Convert.ToDateTime(drmanagers[3]);
+                manager.ProjectId = drmanagers[0].ToString();
+                manager.ProjectName = drmanagers[1].ToString();
+                manager.ProjectDescription = drmanagers[2].ToString();
+                manager.ProjectStartDate = Convert.ToDateTime(drmanagers[3]);
+                manager.ProjectEndDate = Convert.ToDateTime(drmanagers[4]);
                 managers.Add(manager);
             }
             conn.Close();
             return managers;
         }
         //Get All Modules
-        public List<ReleaseManagementModel> GetAllModules(string project_name)
+        public List<ReleaseManagementModel> GetAllModules(string projectId)
         {
             cmdGetAllModulesForManager = new SqlCommand("proc_GetAllModules", conn);
-            cmdGetAllModulesForManager.Parameters.AddWithValue("@projectname", project_name);
+            cmdGetAllModulesForManager.Parameters.AddWithValue("@projectId", projectId);
             cmdGetAllModulesForManager.CommandType = CommandType.StoredProcedure;
             List<ReleaseManagementModel> managers = new List<ReleaseManagementModel>();
             if (conn.State == ConnectionState.Open)
@@ -698,11 +789,12 @@ namespace ReleaseManagementDALLibrary
             while (drmodules.Read())
             {
                 manager = new ReleaseManagementModel();
-                manager.ModuleName = drmodules[0].ToString();
-                manager.ModuleDescription = drmodules[1].ToString();
-                manager.ModuleStatus = drmodules[2].ToString();
-                manager.ModuleStartDate = Convert.ToDateTime(drmodules[3]);
-                manager.ModuleEndDate = Convert.ToDateTime(drmodules[4]);
+                manager.ModuleId = drmodules[0].ToString();
+                manager.ModuleName = drmodules[1].ToString();
+                manager.ModuleDescription = drmodules[2].ToString();
+                manager.ModuleStatus = drmodules[3].ToString();
+                manager.ModuleStartDate = Convert.ToDateTime(drmodules[4]);
+                manager.ModuleEndDate = Convert.ToDateTime(drmodules[5]);
                 managers.Add(manager);
             }
             conn.Close();
@@ -744,5 +836,76 @@ namespace ReleaseManagementDALLibrary
             return updated;
 
         }
+
+        public List<ReleaseManagementModel> GetAllEmployeesForAdmin()
+        {
+            cmdGetEmps = new SqlCommand("proc_GetAllEmployeeForAdmin", conn);
+            cmdGetEmps.CommandType = CommandType.StoredProcedure;
+
+            List<ReleaseManagementModel> admins = new List<ReleaseManagementModel>();
+            OpenConnection();
+            SqlDataReader drUsers = cmdGetEmps.ExecuteReader();
+           
+            ReleaseManagementModel admin = null;
+            while (drUsers.Read())
+            {
+                admin = new ReleaseManagementModel();
+                admin.EmployeeName = drUsers[2].ToString();
+                admin.Employee_mail = drUsers[3].ToString();
+                admins.Add(admin);
+            }
+            conn.Close();
+            return admins;
+
+        }
+        public bool InsertEmployee(ReleaseManagementModel admin)
+        {
+            bool _inserted = false;
+            cmdInsertEmp = new SqlCommand("proc_InsertEmployee", conn);
+            cmdInsertEmp.Parameters.Add("@emp_name", SqlDbType.VarChar, 30);
+            cmdInsertEmp.Parameters.Add("@employee_email", SqlDbType.VarChar, 30);
+            cmdInsertEmp.CommandType = CommandType.StoredProcedure;
+
+            OpenConnection();
+            cmdInsertEmp.Parameters[0].Value = admin.EmployeeName;
+            cmdInsertEmp.Parameters[1].Value = admin.Employee_mail;
+            if (cmdInsertEmp.ExecuteNonQuery() > 0)
+                _inserted = true;
+            else
+                _inserted = false;
+            conn.Close();
+
+            return _inserted;
+        }
+        public bool UpdateEmployee(ReleaseManagementModel admin)
+        {
+            bool updated = false;
+            cmdUpdateEmps = new SqlCommand("proc_UpdateEmployee", conn);
+            cmdUpdateEmps.Parameters.Add("@emp_id", SqlDbType.VarChar, 4);
+            cmdUpdateEmps.Parameters.Add("@emp_name", SqlDbType.VarChar, 30);
+            cmdUpdateEmps.Parameters.Add("@employee_email", SqlDbType.VarChar, 30);
+            cmdUpdateEmps.CommandType = CommandType.StoredProcedure;
+
+            OpenConnection();
+            //doubt
+            cmdUpdateEmps.Parameters[0].Value = admin.EmployeeName;
+            cmdUpdateEmps.Parameters[1].Value = admin.Employee_mail;
+            if (cmdUpdateEmps.ExecuteNonQuery() > 0)
+
+                updated = true;
+            else
+                updated = false;
+            conn.Close();
+            return updated;
+
+        }
+
+        void OpenConnection()
+        {
+            if (conn.State != ConnectionState.Closed)
+                conn.Close();
+            conn.Open();
+        }
+
     }
 }
